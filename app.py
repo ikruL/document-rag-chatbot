@@ -4,7 +4,7 @@ import streamlit as st
 from vectordb import index_data, vector_store
 
 st.set_page_config(
-    page_title="RAG Vietnamese QA Chatbot",
+    page_title="Document RAG chatbot",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -29,7 +29,7 @@ with st.sidebar.expander("Settings", expanded=False):
         st.session_state.messages = []
         st.rerun()
 
-st.title("RAG Files Chatbot")
+st.title("Document RAG chatbot")
 
 uploaded_file = st.file_uploader(
     "Upload a file", type=["pdf", "png", "jpg", "jpeg"])
@@ -45,18 +45,19 @@ if "processed_files" not in st.session_state:
 if uploaded_file is not None:
     file_name = uploaded_file.name
     if file_name not in st.session_state.processed_files:
-        file_bytes = uploaded_file.read()
-        file_type = uploaded_file.type
+        with st.spinner(f"Processing '{file_name}'..."):
+            file_bytes = uploaded_file.read()
+            file_type = uploaded_file.type
 
-        num_chunks, index_message = index_data(
-            file_bytes, file_name, file_type)
+            num_chunks, index_message = index_data(
+                file_bytes, file_name, file_type)
 
-        if num_chunks is None:
-            st.error(index_message)
-        else:
-            st.success(
-                f"File '{file_name}' indexed successfully !!")
-        st.session_state.processed_files.add(file_name)
+            if num_chunks is None:
+                st.error(index_message)
+            else:
+                st.success(
+                    f"File '{file_name}' indexed successfully !!")
+            st.session_state.processed_files.add(file_name)
 
 
 if question := st.chat_input("Ask something about the uploaded file here: ",

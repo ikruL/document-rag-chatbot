@@ -61,3 +61,6 @@ def index_data(file_bytes: bytes, file_name: str, file_type: str):
     db.add_documents(documents)
 
     return len(documents), f"Done! Extracted {file_name} Successfully !!"
+
+
+vector_store, embed_model = get_db()
